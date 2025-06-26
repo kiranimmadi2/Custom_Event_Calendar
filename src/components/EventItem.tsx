@@ -32,6 +32,7 @@ const EventItem: React.FC<EventItemProps> = ({ event, onClick }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log('Event clicked:', event.id, event.title);
     onClick(e);
   };
 
@@ -47,20 +48,32 @@ const EventItem: React.FC<EventItemProps> = ({ event, onClick }) => {
     <div
       ref={setNodeRef}
       style={style}
-      {...listeners}
-      {...attributes}
-      onClick={handleClick}
       className={cn(
-        "text-xs p-1 rounded cursor-pointer transition-all duration-200 hover:opacity-80 select-none",
+        "text-xs p-1 rounded transition-all duration-200 select-none relative",
         getCategoryColor(event.category),
         "text-white truncate",
         isDragging && "opacity-50 z-50"
       )}
       title={`${event.title} - ${formatTime(event.startTime)}`}
     >
-      <div className="font-medium truncate">{event.title}</div>
-      <div className="opacity-90">
-        {formatTime(event.startTime)}
+      {/* Drag handle - only for dragging */}
+      <div 
+        {...listeners}
+        {...attributes}
+        className="absolute inset-0 cursor-move"
+        style={{ zIndex: 1 }}
+      />
+      
+      {/* Click area - only for clicking */}
+      <div 
+        onClick={handleClick}
+        className="relative cursor-pointer hover:opacity-80"
+        style={{ zIndex: 2 }}
+      >
+        <div className="font-medium truncate">{event.title}</div>
+        <div className="opacity-90">
+          {formatTime(event.startTime)}
+        </div>
       </div>
     </div>
   );

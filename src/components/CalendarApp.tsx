@@ -134,26 +134,50 @@ const CalendarApp = () => {
   };
 
   const handleDeleteEvent = (eventId: string) => {
+    console.log('Deleting event:', eventId);
+    
     const eventToDelete = events.find(e => e.id === eventId);
-    if (!eventToDelete) return;
+    if (!eventToDelete) {
+      console.log('Event not found:', eventId);
+      return;
+    }
 
-    // Check if this is a recurring event by looking for the base ID pattern
-    const baseId = eventId.includes('_') ? eventId.split('_')[0] : eventId;
-    const recurringEvents = events.filter(e => 
-      e.id === baseId || e.id.startsWith(baseId + '_')
-    );
+    // Check if this is a recurring event
+    // Recurring events have IDs like "baseId_1", "baseId_2", etc.
+    const isRecurringEvent = eventId.includes('_') || 
+      events.some(e => e.id.startsWith(eventId + '_'));
 
-    if (recurringEvents.length > 1) {
-      // This is part of a recurring series
-      setEvents(prev => prev.filter(e => 
-        e.id !== baseId && !e.id.startsWith(baseId + '_')
-      ));
-      toast({
-        title: "Recurring Event Series Deleted",
-        description: `Deleted ${recurringEvents.length} events from the recurring series.`
-      });
+    if (isRecurringEvent) {
+      // Get the base ID (before the underscore)
+      const baseId = eventId.includes('_') ? eventId.split('_')[0] : eventId;
+      
+      // Find all events in the recurring series
+      const recurringEvents = events.filter(e => 
+        e.id === baseId || e.id.startsWith(baseId + '_')
+      );
+
+      console.log('Found recurring events:', recurringEvents.length, recurringEvents.map(e => e.id));
+
+      if (recurringEvents.length > 1) {
+        // Delete all events in the recurring series
+        setEvents(prev => prev.filter(e => 
+          e.id !== baseId && !e.id.startsWith(baseId + '_')
+        ));
+        
+        toast({
+          title: "Recurring Event Series Deleted",
+          description: `Deleted ${recurringEvents.length} events from the recurring series.`
+        });
+      } else {
+        // Single event, delete normally
+        setEvents(prev => prev.filter(e => e.id !== eventId));
+        toast({
+          title: "Event Deleted",
+          description: "The event has been removed from your calendar."
+        });
+      }
     } else {
-      // Single event
+      // Single non-recurring event
       setEvents(prev => prev.filter(e => e.id !== eventId));
       toast({
         title: "Event Deleted",
