@@ -1,6 +1,12 @@
 # Custom Event Calendar
 
 > **🚀 Project created by [@kiranimmadi2](https://github.com/kiranimmadi2)**
+ ---
+## 🌐 Deployed Website
+
+[View the Live App here!](https://custom-event-calendar-alpha.vercel.app/)
+
+---
 
 ## 📌 Project Info
 
