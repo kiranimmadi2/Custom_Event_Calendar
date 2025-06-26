@@ -1,4 +1,4 @@
-# Custom_Event_Calendar
+# Custom Event Calendar
 
 > **🚀 Project created by [@kiranimmadi2](https://github.com/kiranimmadi2)**
 
