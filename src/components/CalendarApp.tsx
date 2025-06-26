@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -135,13 +134,35 @@ const CalendarApp = () => {
   };
 
   const handleDeleteEvent = (eventId: string) => {
-    setEvents(prev => prev.filter(e => e.id !== eventId));
+    const eventToDelete = events.find(e => e.id === eventId);
+    if (!eventToDelete) return;
+
+    // Check if this is a recurring event by looking for the base ID pattern
+    const baseId = eventId.includes('_') ? eventId.split('_')[0] : eventId;
+    const recurringEvents = events.filter(e => 
+      e.id === baseId || e.id.startsWith(baseId + '_')
+    );
+
+    if (recurringEvents.length > 1) {
+      // This is part of a recurring series
+      setEvents(prev => prev.filter(e => 
+        e.id !== baseId && !e.id.startsWith(baseId + '_')
+      ));
+      toast({
+        title: "Recurring Event Series Deleted",
+        description: `Deleted ${recurringEvents.length} events from the recurring series.`
+      });
+    } else {
+      // Single event
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      toast({
+        title: "Event Deleted",
+        description: "The event has been removed from your calendar."
+      });
+    }
+
     setIsModalOpen(false);
     setSelectedEvent(null);
-    toast({
-      title: "Event Deleted",
-      description: "The event has been removed from your calendar."
-    });
   };
 
   const handleEventDrop = (eventId: string, newDate: Date) => {
