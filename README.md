@@ -1,4 +1,4 @@
-# Event Horizon Tool
+# Custom_Event_Calendar
 
 > **🚀 Project created by [@kiranimmadi2](https://github.com/kiranimmadi2)**
 
