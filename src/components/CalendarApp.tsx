@@ -1,12 +1,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CalendarHeader from './CalendarHeader';
 import CalendarGrid from './CalendarGrid';
+import WeeklyView from './WeeklyView';
 import EventModal from './EventModal';
+import EventFilters from './EventFilters';
+import EventStats from './EventStats';
+import EventConflictDialog from './EventConflictDialog';
 import { Event, RecurrenceType } from '../types/calendar';
 import { toast } from '@/hooks/use-toast';
 import { generateRecurringEvents, checkEventConflict } from '../utils/calendarUtils';
+import { filterEvents } from '../utils/eventUtils';
+import { Calendar, CalendarDays } from 'lucide-react';
 
 const CalendarApp = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -14,6 +22,18 @@ const CalendarApp = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
+  const [conflictDialog, setConflictDialog] = useState<{
+    isOpen: boolean;
+    conflictingEvents: Event[];
+    newEvent: Omit<Event, 'id'> | null;
+  }>({
+    isOpen: false,
+    conflictingEvents: [],
+    newEvent: null
+  });
 
   // Load events from localStorage on component mount
   useEffect(() => {
@@ -34,6 +54,8 @@ const CalendarApp = () => {
     localStorage.setItem('calendar-events', JSON.stringify(events));
   }, [events]);
 
+  const filteredEvents = filterEvents(events, searchTerm, categoryFilter);
+
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     setSelectedEvent(null);
@@ -53,14 +75,27 @@ const CalendarApp = () => {
     };
 
     // Check for conflicts
-    if (checkEventConflict(newEvent, events.filter(e => e.id !== newEvent.id))) {
-      toast({
-        title: "Event Conflict",
-        description: "This event conflicts with an existing event at the same time.",
-        variant: "destructive"
+    const conflictingEvents = events.filter(e => 
+      e.id !== newEvent.id && checkEventConflict(newEvent, [e])
+    );
+
+    if (conflictingEvents.length > 0) {
+      setConflictDialog({
+        isOpen: true,
+        conflictingEvents,
+        newEvent: eventData
       });
       return;
     }
+
+    saveEventWithoutConflictCheck(eventData);
+  };
+
+  const saveEventWithoutConflictCheck = (eventData: Omit<Event, 'id'>) => {
+    const newEvent: Event = {
+      ...eventData,
+      id: selectedEvent?.id || Date.now().toString()
+    };
 
     if (selectedEvent) {
       // Update existing event
@@ -85,6 +120,18 @@ const CalendarApp = () => {
     setIsModalOpen(false);
     setSelectedEvent(null);
     setSelectedDate(null);
+  };
+
+  const handleForceCreateEvent = () => {
+    if (conflictDialog.newEvent) {
+      saveEventWithoutConflictCheck(conflictDialog.newEvent);
+    }
+    setConflictDialog({ isOpen: false, conflictingEvents: [], newEvent: null });
+    toast({
+      title: "Event Created",
+      description: "Event created despite conflicts.",
+      variant: "destructive"
+    });
   };
 
   const handleDeleteEvent = (eventId: string) => {
@@ -139,19 +186,61 @@ const CalendarApp = () => {
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Event Calendar</h1>
         <p className="text-gray-600">Manage your schedule with ease</p>
       </div>
+
+      <EventStats events={events} />
       
       <Card className="p-6 shadow-lg">
-        <CalendarHeader 
-          currentDate={currentDate}
-          onDateChange={setCurrentDate}
+        <div className="flex items-center justify-between mb-4">
+          <CalendarHeader 
+            currentDate={currentDate}
+            onDateChange={setCurrentDate}
+          />
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant={viewMode === 'month' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('month')}
+              className="flex items-center space-x-1"
+            >
+              <Calendar className="h-4 w-4" />
+              <span>Month</span>
+            </Button>
+            <Button
+              variant={viewMode === 'week' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('week')}
+              className="flex items-center space-x-1"
+            >
+              <CalendarDays className="h-4 w-4" />
+              <span>Week</span>
+            </Button>
+          </div>
+        </div>
+
+        <EventFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
         />
-        <CalendarGrid
-          currentDate={currentDate}
-          events={events}
-          onDateClick={handleDateClick}
-          onEventClick={handleEventClick}
-          onEventDrop={handleEventDrop}
-        />
+
+        {viewMode === 'month' ? (
+          <CalendarGrid
+            currentDate={currentDate}
+            events={filteredEvents}
+            onDateClick={handleDateClick}
+            onEventClick={handleEventClick}
+            onEventDrop={handleEventDrop}
+          />
+        ) : (
+          <WeeklyView
+            currentDate={currentDate}
+            events={filteredEvents}
+            onEventClick={handleEventClick}
+            onDateClick={handleDateClick}
+          />
+        )}
       </Card>
 
       <EventModal
@@ -165,6 +254,14 @@ const CalendarApp = () => {
         selectedEvent={selectedEvent}
         onSave={handleSaveEvent}
         onDelete={handleDeleteEvent}
+      />
+
+      <EventConflictDialog
+        isOpen={conflictDialog.isOpen}
+        onClose={() => setConflictDialog({ isOpen: false, conflictingEvents: [], newEvent: null })}
+        conflictingEvents={conflictDialog.conflictingEvents}
+        newEvent={conflictDialog.newEvent || {} as Omit<Event, 'id'>}
+        onForceCreate={handleForceCreateEvent}
       />
     </div>
   );
