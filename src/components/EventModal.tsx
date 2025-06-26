@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -42,17 +41,34 @@ const EventModal: React.FC<EventModalProps> = ({
 
   useEffect(() => {
     if (selectedEvent) {
+      // Safely handle date conversion
+      const formatDateForInput = (date: Date | string) => {
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj instanceof Date && !isNaN(dateObj.getTime()) 
+          ? dateObj.toISOString().split('T')[0] 
+          : '';
+      };
+
+      const formatTimeForInput = (date: Date | string) => {
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj instanceof Date && !isNaN(dateObj.getTime()) 
+          ? dateObj.toTimeString().slice(0, 5) 
+          : '';
+      };
+
       setFormData({
         title: selectedEvent.title,
         description: selectedEvent.description || '',
-        date: selectedEvent.date.toISOString().split('T')[0],
-        startTime: selectedEvent.startTime.toTimeString().slice(0, 5),
-        endTime: selectedEvent.endTime.toTimeString().slice(0, 5),
+        date: formatDateForInput(selectedEvent.date),
+        startTime: formatTimeForInput(selectedEvent.startTime),
+        endTime: formatTimeForInput(selectedEvent.endTime),
         category: selectedEvent.category,
         recurrenceType: selectedEvent.recurrence?.type || 'none',
         recurrenceInterval: selectedEvent.recurrence?.interval || 1,
         recurrenceWeekDays: selectedEvent.recurrence?.weekDays || [],
-        recurrenceEndDate: selectedEvent.recurrence?.endDate?.toISOString().split('T')[0] || ''
+        recurrenceEndDate: selectedEvent.recurrence?.endDate 
+          ? formatDateForInput(selectedEvent.recurrence.endDate)
+          : ''
       });
     } else if (selectedDate) {
       const dateStr = selectedDate.toISOString().split('T')[0];

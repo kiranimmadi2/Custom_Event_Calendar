@@ -29,24 +29,38 @@ const EventItem: React.FC<EventItemProps> = ({ event, onClick }) => {
     return colors[category as keyof typeof colors] || colors.other;
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick(e);
+  };
+
+  // Format time safely
+  const formatTime = (time: Date | string) => {
+    const dateObj = typeof time === 'string' ? new Date(time) : time;
+    return dateObj instanceof Date && !isNaN(dateObj.getTime()) 
+      ? dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : 'Invalid time';
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
-        "text-xs p-1 rounded cursor-pointer transition-all duration-200 hover:opacity-80",
+        "text-xs p-1 rounded cursor-pointer transition-all duration-200 hover:opacity-80 select-none",
         getCategoryColor(event.category),
         "text-white truncate",
         isDragging && "opacity-50 z-50"
       )}
-      title={`${event.title} - ${event.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+      title={`${event.title} - ${formatTime(event.startTime)}`}
     >
       <div className="font-medium truncate">{event.title}</div>
       <div className="opacity-90">
-        {event.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {formatTime(event.startTime)}
       </div>
     </div>
   );
