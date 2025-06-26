@@ -1,73 +1,73 @@
-# Welcome to your Lovable project
+# Event Horizon Tool
 
-## Project info
+> **🚀 Project created by [@kiranimmadi2](https://github.com/kiranimmadi2)**
 
-**URL**: https://lovable.dev/projects/daaff186-68d4-49c1-ac58-97f9503987f1
+## 📌 Project Info
 
-## How can I edit this code?
+- This is a modern web tool built using React, TypeScript, Tailwind CSS, and shadcn-ui.
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🛠️ How to Run This Project Locally
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/daaff186-68d4-49c1-ac58-97f9503987f1) and start prompting.
+1. **Clone this repository:**
+   ```bash
+   git clone https://github.com/kiranimmadi2/event-horizon-tool.git
+   ```
 
-Changes made via Lovable will be committed automatically to this repo.
+2. **Navigate to the project directory:**
+   ```bash
+   cd event-horizon-tool
+   ```
 
-**Use your preferred IDE**
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+   The app will be running locally at: [http://localhost:5173](http://localhost:5173)
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## ✏️ Editing the Code
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+You can edit the code using any code editor (e.g., VS Code), then push your changes to GitHub:
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git add .
+git commit -m "Your message"
+git push origin main
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🧰 Tech Stack
 
-**Use GitHub Codespaces**
+- **Vite**
+- **TypeScript**
+- **React**
+- **shadcn-ui**
+- **Tailwind CSS**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🌐 Deploying to Vercel
 
-This project is built with:
+> You can deploy this project for free using [Vercel](https://vercel.com).
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 🔗 Steps to Deploy:
 
-## How can I deploy this project?
+1. Go to [https://vercel.com](https://vercel.com) and sign in with your GitHub account.
+2. Click **"Add New Project"**.
+3. Import your GitHub repository (`event-horizon-tool`).
+4. Vercel will auto-detect it's a Vite + React project.
+5. Click **"Deploy"**.
+6. Once deployed, your project will be live at a URL like:  
+   `https://event-horizon-tool.vercel.app`
 
-Simply open [Lovable](https://lovable.dev/projects/daaff186-68d4-49c1-ac58-97f9503987f1) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
